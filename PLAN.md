@@ -96,7 +96,14 @@ Claude Code はこのファイルに従って作業を進める。
 - [x] 難易度カーブの通し確認（design.md §8 に整理。新出概念は原則1ステージ1つ、段の境目に橋渡し）
       ⚠️ ただし変数・四則演算・リスト・文字列・def は現エンジン非対応。別のエンジン拡張が必要
       （DECISIONS.md / design.md §8）。ユーザー判断を仰ぐ
-- [ ] PR作成 → gh 未導入のためローカルで feature/m6-stages に実装完了。gh 認証後にユーザーが push→PR
+- [x] PR作成・マージ（PR #2、origin/main に反映済み）
+
+### M6.5: Python値エンジンの拡張（branch: feature/m6.5-python-values）
+- [x] `js/lang/pyRun.js`: 変数・四則演算・リスト・文字列・def・print を扱う Python サブセット
+      インタプリタを自作（Nodeでテスト可能、無限ループ停止つき）。単体テスト17件
+- [x] mode:'compute' の新パズル型（ロボット無し・print出力で正誤判定）と compute8ステージ（d1〜d8）
+- [x] これで REQUIREMENTS の Python 範囲を全網羅。合計**39ステージ**、全118テストパス、実ChromeでE2E確認
+- [x] PR作成（gh をフルパスで自動化）→ CI/テスト確認後マージ
 
 ### M7: 磨き込み（branch: feature/m7-polish）
 - [ ] BGM追加、演出強化（レベルアップ、アンロック要素）

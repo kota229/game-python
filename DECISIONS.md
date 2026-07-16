@@ -115,3 +115,23 @@ Claude Code 側で自動化できる。）
   ※この点はユーザーに明示し、判断を仰ぐ
 
 ---
+
+## 2026-07-16 M6.5（Python値エンジンの拡張）
+
+上記 M6 の「未対応」を解消。ユーザーの了承（おすすめ順で進行）を受けて実装。
+
+- 2026-07-16 / **計算/出力パズル用に Python サブセット・インタプリタ `js/lang/pyRun.js` を自作** /
+  変数代入・四則演算(+ - * / // % **)・比較・and/or/not・if/elif/else・for(range/リスト)・while・
+  def/return・print・リスト([]/append/index/len/連結)・文字列(連結/len/upper/lower/str/int)・
+  組み込み(sum/min/max/abs/range/bool)に対応。トークナイザ＋優先順位つき式パーサ＋
+  ツリーウォーク評価器。DOM非依存で Node テスト可能（無限ループは MAX_STEPS で停止）/
+  代替案: Skulpt/Pyodide（本物Pythonだが、Nodeでの自動検証が難しく CI 安全網を失う。
+  自作サブセットなら stages.test.js で出力を実行照合できる）
+- 2026-07-16 / **mode:'compute' の新パズル型を追加（ロボット無し・print 出力で正誤判定）** /
+  変数/計算/リスト/文字列/def を「ミッションの こたえを print する」形式で学ぶ。
+  compute8ステージ（d1〜d8）を追加し、全 solutionCode の出力を stages.test.js で照合 /
+- 2026-07-16 / **これで REQUIREMENTS の Python 範囲（変数・四則演算・if/elif/else・for/while・
+  def・リスト・文字列）を全て網羅** / 合計39ステージ（block10/bridge5/fill8/free8/compute8）/
+  ※Pyodide は引き続き不要（サブセットで要件充足・軽量・オフライン・CI検証可能を維持）
+
+---

@@ -72,6 +72,17 @@ body {
 .msg-area { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); background: rgba(239,68,68,.95); color: #fff; font-weight: 700; padding: 8px 18px; border-radius: 14px; font-size: 18px; min-height: 0; pointer-events: none; text-align: center; max-width: 90%; }
 .msg-area:empty { display: none; }
 
+/* 計算/出力モードの左パネル */
+.compute-view { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 8px; padding: 4px; overflow: auto; }
+.compute-view[hidden] { display: none; }
+.compute-task { background: #fef9c3; border-radius: 14px; padding: 10px 14px; }
+.compute-task-text { font-size: clamp(16px, 2.5vw, 21px); line-height: 1.5; white-space: pre-wrap; }
+.compute-output { margin: 0; flex: 1; min-height: 80px; background: #0f172a; color: #a7f3d0; border-radius: 12px; padding: 12px 14px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 17px; line-height: 1.6; white-space: pre-wrap; overflow: auto; }
+.compute-output:empty::before { content: '▶ を おすと ここに でるよ'; color: #64748b; }
+.compute-verdict { font-size: 20px; font-weight: 800; min-height: 28px; text-align: center; }
+.compute-verdict.ok { color: #16a34a; }
+.compute-verdict.ng { color: #dc2626; }
+
 .editor-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .editor-panel.disabled { opacity: .55; pointer-events: none; }
 .mode-ui { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }

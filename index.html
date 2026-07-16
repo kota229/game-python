@@ -46,6 +46,16 @@
     <div class="play-main">
       <div class="world-panel">
         <canvas id="world-canvas"></canvas>
+        <!-- 計算/出力モードの表示（ロボット無し） -->
+        <div id="compute-view" class="compute-view" hidden>
+          <div class="compute-task">
+            <div class="panel-label">ミッション 🎯</div>
+            <div id="compute-task-text" class="compute-task-text"></div>
+          </div>
+          <div class="panel-label">じっこう の けっか（print したもの）</div>
+          <pre id="compute-output" class="compute-output"></pre>
+          <div id="compute-verdict" class="compute-verdict"></div>
+        </div>
         <div id="msg-area" class="msg-area"></div>
       </div>
 
