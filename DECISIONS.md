@@ -27,6 +27,12 @@ Claude Code が自走中に行った判断をここに追記する。
 ブラウザ経由の対話ログインが必要なため、以下は自走では完了できませんでした。
 ローカル側（git init、.gitignore、CI/Pages workflow、コミット）は完了済みです。
 
+### ✅ 公開URL（2026-07-16 GitHub連携セットアップ完了）
+ユーザーが gh 認証・リポジトリ作成・push を実施し、Pages（Source=GitHub Actions）も有効化済み。
+**公開URL: https://kota229.github.io/game-python/** （main への push で自動デプロイ・動作確認済み）。
+以降は Claude 側で push→PR→CI確認→マージまで自動化（gh はフルパス `C:\Program Files\GitHub CLI\gh.exe`）。
+
+（以下は当時の手順メモ。対応済み）
 ユーザーに実施いただく手順:
 1. GitHub CLI をインストール（https://cli.github.com/）
 2. `gh auth login` でブラウザ認証（GitHub.com → HTTPS → ブラウザ）

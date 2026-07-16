@@ -170,8 +170,26 @@ body {
 .ctrl-btn.run:disabled { background: #94a3b8; box-shadow: 0 4px 0 #64748b; cursor: default; }
 .ctrl-btn.hint { background: #fde68a; box-shadow: 0 4px 0 #f59e0b; }
 
-.hint-area { margin: 0 16px; padding: 0; font-size: 17px; color: #92400e; background: #fef3c7; border-radius: 12px; max-height: 0; overflow: hidden; transition: max-height .25s, padding .25s; }
-.hint-area.show { padding: 10px 14px; max-height: 120px; }
+.hint-area { margin: 0 16px; padding: 0; font-size: 17px; color: #92400e; background: #fef3c7; border-radius: 12px; max-height: 0; overflow: auto; transition: max-height .25s, padding .25s; white-space: pre-wrap; }
+.hint-area.show { padding: 10px 14px; max-height: 160px; }
+
+/* ふりがな（ruby） */
+ruby { ruby-align: center; }
+rt { font-size: 0.55em; color: inherit; opacity: .85; font-weight: 400; }
+
+/* マップ: セクション見出しと進捗 */
+.map-progress { display: flex; align-items: center; gap: 12px; padding: 10px 20px 0; }
+.map-progress .bar { flex: 1; height: 14px; background: #e2e8f0; border-radius: 8px; overflow: hidden; }
+.map-progress .bar > span { display: block; height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 8px; transition: width .4s; }
+.map-progress .count { font-weight: 800; color: #16a34a; font-size: 18px; white-space: nowrap; }
+.map-section-title { grid-column: 1 / -1; font-weight: 800; font-size: 18px; color: #334155; margin: 8px 4px 0; padding-top: 8px; border-top: 2px dashed #cbd5e1; }
+.map-section-title:first-child { border-top: none; padding-top: 0; }
+
+/* 次に遊ぶステージの強調 */
+.stage-card.next { box-shadow: 0 0 0 4px #fbbf24, 0 5px 0 #cbd5e1; animation: nextpulse 1.4s ease-in-out infinite; }
+.stage-card .next-badge { position: absolute; top: -10px; right: -6px; background: #f59e0b; color: #fff; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 10px; }
+.stage-card { position: relative; }
+@keyframes nextpulse { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
 /* クリア演出 */
 .overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(15,23,42,.5); z-index: 50; }
