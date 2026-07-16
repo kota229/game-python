@@ -73,3 +73,29 @@ Claude Code 側で自動化できる。）
 グラフィックは Canvas/CSS 自作でアセット流用なし。
 
 ---
+
+## 2026-07-16 M5（カリキュラム全段階のエンジン拡張）— Python層の方式
+
+- 2026-07-16 / **ブロック→Python変換は自作ジェネレータ（js/lang/pyGen.js）を採用** /
+  ブロックASTから対応Pythonソースを生成し、Stage 2（ブロック⇔Python併記）で表示する。
+  ロボットの動作は既存のトレース実行エンジンで動かし、Pythonは「対応表示」として見せる /
+  代替案: Blockly の Python ジェネレータ（重く、既存の自作ブロックと二重管理になる）
+- 2026-07-16 / **Stage 3/4 の Python 実行は、ロボット制御サブセットの自作パーサ
+  （js/lang/pyParse.js）で既存トレースエンジンに写像して実行** /
+  対応構文: robot.forward()/turn_left()/turn_right()/collect()、for i in range(n):、
+  while <条件>:、if/elif/else、条件（robot.can_move()/on_gem()/at_goal() とその否定）、
+  Pythonのインデント構造。これによりオフライン・軽量・ビルド不要・Nodeでテスト可能を維持 /
+- 2026-07-16 / **Pyodide の導入は見送り（保留・将来のアップグレード候補）** /
+  CLAUDE.md は「Pyodide第一候補、導入が困難な場合は自作簡易インタプリタで代替」。
+  オフライン完結＋GitHub Pages＋子ども向けタブレットの高速初回ロードという制約下で、
+  10MB超のCPython(WASM)をリポジトリに同梱するのは「導入が困難」に該当すると判断。
+  本ゲームのステージが要求するPython（ロボットAPI・for/while・range・if/elif/else・比較）は
+  上記サブセットで充足する。任意コードの本物Python実行が必要になった段階でPyodideを
+  遅延ロードで追加する道は残す（CREDITS/DECISIONSに記録して切替） /
+  代替案: Skulpt（MIT・約1MB）。サブセット自作より本物志向だが、robot APIのブリッジと
+  トレース化の作り込みが必要で、当面はサブセット自作の方が軽く確実
+- 2026-07-16 / **CodeMirror の導入は Stage 4 UI では当面見送り、等幅textareaで代替** /
+  オフライン同梱の複雑さを避け、まず動くものを優先。シンタックスハイライト等が必要に
+  なった段階で M7（磨き込み）で CodeMirror(MIT) を導入する /
+
+---
