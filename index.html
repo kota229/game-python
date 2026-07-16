@@ -3,17 +3,81 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>CodeQuest（準備中）</title>
-  <style>
-    body { font-family: system-ui, sans-serif; background:#0f172a; color:#f8fafc;
-           display:flex; align-items:center; justify-content:center; height:100vh; margin:0; text-align:center; }
-    h1 { font-size: clamp(28px, 6vw, 56px); }
-  </style>
+  <meta name="theme-color" content="#0ea5e9" />
+  <title>CodeQuest — プログラミングの ぼうけん</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <div>
-    <h1>🤖 CodeQuest</h1>
-    <p>子ども向けプログラミング学習ゲーム（準備中）</p>
-  </div>
+  <!-- タイトル画面 -->
+  <section id="screen-title" class="screen">
+    <div class="title-box">
+      <h1 class="game-title">🤖 CodeQuest</h1>
+      <p class="game-sub">ロボットに めいれいして ゴールを めざそう！</p>
+      <div class="title-buttons">
+        <button id="btn-start" class="big-btn primary">はじめる ▶</button>
+        <button id="btn-continue" class="big-btn">つづきから</button>
+        <button id="btn-mute" class="big-btn ghost">🔊 おと オン</button>
+      </div>
+      <button id="btn-reset-progress" class="text-btn">きろくを けす</button>
+    </div>
+  </section>
+
+  <!-- ステージマップ -->
+  <section id="screen-map" class="screen">
+    <header class="bar">
+      <button id="btn-back-title" class="icon-btn">◀ もどる</button>
+      <h2>ステージを えらぼう</h2>
+      <span class="spacer"></span>
+    </header>
+    <div id="map-grid" class="map-grid"></div>
+  </section>
+
+  <!-- プレイ画面 -->
+  <section id="screen-play" class="screen">
+    <header class="bar">
+      <button id="btn-to-map" class="icon-btn">◀ マップ</button>
+      <h2 id="play-title">ステージ</h2>
+      <span class="spacer"></span>
+    </header>
+    <p id="play-tutorial" class="tutorial"></p>
+
+    <div class="play-main">
+      <div class="world-panel">
+        <canvas id="world-canvas"></canvas>
+        <div id="msg-area" class="msg-area"></div>
+      </div>
+
+      <div class="editor-panel">
+        <div class="panel-label">つかえる ブロック</div>
+        <div id="palette" class="palette"></div>
+        <div class="panel-label">じっこう する めいれい</div>
+        <div id="program" class="program"></div>
+      </div>
+    </div>
+
+    <div id="hint-area" class="hint-area"></div>
+
+    <div class="controls">
+      <button id="btn-hint" class="ctrl-btn hint">💡 ヒント</button>
+      <button id="btn-reset" class="ctrl-btn">↺ リセット</button>
+      <button id="btn-run" class="ctrl-btn run">▶ じっこう</button>
+    </div>
+
+    <!-- クリア演出 -->
+    <div id="clear-dialog" class="overlay">
+      <div class="clear-box">
+        <div class="clear-title">クリア！ 🎉</div>
+        <div id="clear-stars" class="clear-stars"></div>
+        <div class="clear-buttons">
+          <button id="btn-retry" class="big-btn ghost">もういちど</button>
+          <button id="btn-next" class="big-btn primary">つぎへ ▶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="./js/main.js"></script>
 </body>
 </html>
