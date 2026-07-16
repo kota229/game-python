@@ -7,6 +7,8 @@ import { recordResult, getResult, resetProgress } from './storage.js';
 import sfx, { setMuted, isMuted } from './audio.js';
 import { createWorldView } from './ui/worldView.js';
 import { createProgramEditor } from './ui/programEditor.js';
+import { astToPython } from './lang/pyGen.js';
+import { parsePython } from './lang/pyParse.js';
 
 const $ = (sel) => document.querySelector(sel);
 const screens = {
@@ -18,8 +20,10 @@ const screens = {
 let worldView = null;
 let editor = null;
 let currentStage = null;
+let currentMode = 'block';
 let running = false;
 let hintIndex = 0;
+let fillSelects = []; // 穴埋めモードの各ブランクの select 要素
 
 function show(name) {
   for (const [k, el] of Object.entries(screens)) el.classList.toggle('active', k === name);
@@ -76,7 +80,10 @@ $('#btn-back-title')?.addEventListener('click', () => { sfx.tap(); show('title')
 // --- プレイ画面 ---
 function openStage(index) {
   currentStage = { ...STAGES[index], _index: index };
+  currentMode = currentStage.mode || 'block';
   hintIndex = 0;
+  editor = null;
+  fillSelects = [];
   show('play');
 
   $('#play-title').textContent = `${index + 1}. ${currentStage.title}`;
@@ -90,14 +97,85 @@ function openStage(index) {
   worldView = createWorldView(canvas);
   worldView.setStage(currentStage);
 
-  // エディタ
-  editor = createProgramEditor($('#palette'), $('#program'), {
-    allowed: currentStage.allowed,
-    sfx,
-    onChange: () => { $('#msg-area').textContent = ''; },
-  });
+  // モードごとのUIを出し分け
+  const useBlock = currentMode === 'block' || currentMode === 'bridge';
+  $('#block-ui').hidden = !useBlock;
+  $('#python-view').hidden = currentMode !== 'bridge';
+  $('#fill-ui').hidden = currentMode !== 'fill';
+  $('#free-ui').hidden = currentMode !== 'free';
+
+  if (useBlock) {
+    editor = createProgramEditor($('#palette'), $('#program'), {
+      allowed: currentStage.allowed,
+      sfx,
+      onChange: () => { $('#msg-area').textContent = ''; if (currentMode === 'bridge') updatePythonView(); },
+    });
+    if (currentMode === 'bridge') updatePythonView();
+  } else if (currentMode === 'fill') {
+    renderFill(currentStage);
+  } else if (currentMode === 'free') {
+    $('#free-code').value = currentStage.starter || '';
+  }
 
   setRunning(false);
+}
+
+// 段階2: ブロックに対応するPythonを表示
+function updatePythonView() {
+  const py = astToPython(editor.getProgram());
+  $('#python-code').textContent = py || '（ブロックを ならべると ここに でるよ）';
+}
+
+// 段階3: 穴埋めテンプレートを描画
+function renderFill(stage) {
+  const pre = $('#fill-code');
+  pre.innerHTML = '';
+  fillSelects = [];
+  const parts = stage.fill.template.split(/\{(\d+)\}/); // 偶数=テキスト, 奇数=ブランク番号
+  parts.forEach((part, i) => {
+    if (i % 2 === 0) {
+      pre.appendChild(document.createTextNode(part));
+    } else {
+      const bi = Number(part);
+      const blank = stage.fill.blanks[bi];
+      const sel = document.createElement('select');
+      sel.className = 'blank';
+      blank.options.forEach((opt) => {
+        const o = document.createElement('option');
+        o.value = opt; o.textContent = opt;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', () => { sfx.tap(); $('#msg-area').textContent = ''; });
+      fillSelects[bi] = sel;
+      pre.appendChild(sel);
+    }
+  });
+}
+
+// 実行するプログラム（ブロックAST）を現在のモードから取り出す。
+// 失敗（空・パースエラー）時は null を返し、メッセージを表示する。
+function getProgramForRun() {
+  if (currentMode === 'block' || currentMode === 'bridge') {
+    if (!editor || editor.isEmpty()) { flashMsg('ブロックを ならべてね！'); return null; }
+    return editor.getProgram();
+  }
+  if (currentMode === 'fill') {
+    let code = currentStage.fill.template;
+    fillSelects.forEach((sel, i) => { code = code.replace(new RegExp(`\\{${i}\\}`, 'g'), sel.value); });
+    return parseOrShow(code);
+  }
+  if (currentMode === 'free') {
+    const code = $('#free-code').value;
+    if (!code.trim()) { flashMsg('Python を かいてね！'); return null; }
+    return parseOrShow(code);
+  }
+  return null;
+}
+
+function parseOrShow(code) {
+  const { program, error } = parsePython(code);
+  if (error) { flashMsg('⚠️ ' + error); return null; }
+  return program;
 }
 
 function fitCanvas(canvas) {
@@ -110,18 +188,13 @@ function fitCanvas(canvas) {
 function setRunning(v) {
   running = v;
   $('#btn-run').disabled = v;
-  $('#palette').classList.toggle('disabled', v);
-  $('#program').classList.toggle('disabled', v);
+  document.querySelector('.editor-panel').classList.toggle('disabled', v);
 }
 
 async function onRun() {
-  if (running || !editor) return;
-  const program = editor.getProgram();
-  if (editor.isEmpty()) {
-    flashMsg('ブロックを ならべてね！');
-    sfx.fail();
-    return;
-  }
+  if (running) return;
+  const program = getProgramForRun();
+  if (program === null) { sfx.fail(); return; }
   $('#msg-area').textContent = '';
   setRunning(true);
   worldView.reset();
