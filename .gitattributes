@@ -1,0 +1,5 @@
+# 改行コードを LF に統一（CI は Linux、実行はブラウザのため）
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.svg text eol=lf

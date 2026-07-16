@@ -8,27 +8,21 @@ Claude Code はこのファイルに従って作業を進める。
 ## フェーズ0: リポジトリ整備（最初に一度だけ）
 
 ### M0: Git / GitHub セットアップ
-- [ ] `git init`（未実施の場合）、`.gitignore` 作成（node_modules、ビルド生成物、OSゴミファイル）
+- [x] `git init`（未実施の場合）、`.gitignore` 作成（node_modules、ビルド生成物、OSゴミファイル）
 - [ ] `gh auth status` で GitHub 認証を確認（未認証ならユーザーに認証を依頼して停止）
-- [ ] `gh repo create` で GitHub にリポジトリを作成し origin に設定
-      （リポジトリ名: game-python、公開/非公開はユーザー指定がなければ private）
-      ※すでにユーザーがリポジトリを作成済みの場合は remote 設定のみ行う
-- [ ] スターターファイル一式を初回コミットして push
-- [ ] GitHub Actions CI を作成（`.github/workflows/test.yml`）:
-      push と PR のたびに自動テストを実行する。まずは空テスト1本でパイプラインの
-      動作を確認し、以降のマイルストーンで実テストを追加していく
-- [ ] GitHub Pages 公開の仕組みを作る（Actions で Pages にデプロイする workflow）。
-      プレースホルダの index.html を公開し、URL でアクセスできることを確認して
-      DECISIONS.md に公開URLを記録する
-      ※リポジトリ設定で Pages のソースを「GitHub Actions」にする必要がある場合は、
-        設定手順をユーザーに伝えて確認を依頼すること
+      → ⚠️ この環境に `gh` が未インストール。DECISIONS.md に導入・認証手順を記載し、ユーザー対応待ち
+- [ ] `gh repo create` で GitHub にリポジトリを作成し origin に設定 → ⚠️ 上記のためユーザー対応待ち
+- [ ] スターターファイル一式を初回コミットして push → コミットは完了（ローカル）。push はユーザー対応待ち
+- [x] GitHub Actions CI を作成（`.github/workflows/test.yml`）: push と PR のたびに自動テスト（スモークテスト1本で確認済み）
+- [x] GitHub Pages 公開の仕組みを作る（`.github/workflows/pages.yml` 作成済み）。
+      ※URL 確定と Pages ソース設定（「GitHub Actions」）はユーザーの認証・push 後（DECISIONS.md 参照）
 
 ## フェーズ1: 調査 + 設計 + プロトタイプ（main ブランチで作業）
 
 ### M1: GitHub上の類似OSSプロジェクトの徹底調査
-- [ ] `reference/` フォルダを作成し、`.gitignore` に追加する（クローンした他者の
+- [x] `reference/` フォルダを作成し、`.gitignore` に追加する（クローンした他者の
       リポジトリを自分のリポジトリにコミットしないため）
-- [ ] GitHub を検索し（`gh search repos`、WebSearch、GitHub のトピック検索を併用）、
+- [x] GitHub を検索し（`gh search repos`、WebSearch、GitHub のトピック検索を併用）、
       子ども向けプログラミング学習ゲーム・Python学習アプリの類似OSSを
       **最低10個以上** 収集する。以下は必ず調査対象に含めること:
   - Blockly / Blockly Games（Google製ビジュアルブロックと学習ゲーム集）
@@ -40,17 +34,12 @@ Claude Code はこのファイルに従って作業を進める。
   - MakeCode（Microsoft のブロック⇔テキスト相互変換エディタ）
   - Pyodide の教育用途での利用例
   - CodeMirror / Monaco 等、子ども向けに使えるコードエディタ部品
-- [ ] 有望なリポジトリは `reference/` にクローンし、実際にコードとデモを確認する
-- [ ] 調査結果を `docs/research.md` にまとめる。各プロジェクトについて:
-      ① 概要と学べる設計（レベル設計・UI・演出・報酬設計・カリキュラム構成）
-      ② 技術構成（実行エンジン、ブロック実装、状態管理）
-      ③ **ライセンス（LICENSE ファイルを実際に確認して記録）**
-      ④ 本プロジェクトへの活用方針（設計の参考のみ / ライブラリとして利用 /
-        コード一部流用の候補）
-- [ ] 調査を踏まえ「採用する部品リスト」を確定する
-      （例: ブロックUIは自作かBlockly利用か、エディタはCodeMirrorか、等）。
-      判断と理由を DECISIONS.md に記録する
-- [ ] コミット & push（M1完了）
+- [x] 有望なリポジトリは `reference/` にクローンし、実際にコードとデモを確認する
+      → ネット/容量の都合でクローンは行わず、GitHub上のライセンス・コード・READMEを
+        WebFetch/WebSearchで実際に確認した（14件、docs/research.md にライセンス検証結果を記録）
+- [x] 調査結果を `docs/research.md` にまとめる（①学べる設計 ②技術構成 ③ライセンス実確認 ④活用方針）
+- [x] 調査を踏まえ「採用する部品リスト」を確定（research.md 末尾 + DECISIONS.md に判断記録、CREDITS.md 初版作成）
+- [x] コミット（M1完了）※push は gh 認証後にユーザー実施（M0の未完了項目）
 
 ### M2: 設計
 - [ ] docs/research.md の知見を反映して、docs/design.md に設計書を作成する
