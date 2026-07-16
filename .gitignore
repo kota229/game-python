@@ -2,6 +2,7 @@
 node_modules/
 dist/
 build/
+www/
 *.tsbuildinfo
 
 # 参照用にクローンした他者のリポジトリ（自分のリポジトリには含めない）
