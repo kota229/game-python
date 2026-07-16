@@ -113,8 +113,8 @@ test('pyParse: コメントと空行は無視', () => {
   assert.deepEqual(program, [{ type: 'forward' }]);
 });
 
-// --- 往復（ラウンドトリップ）: 全プロトタイプ解答が block→py→parse で同じ結果になる ---
-for (const stage of STAGES) {
+// --- 往復（ラウンドトリップ）: block/bridge 形式の解答が block→py→parse で同じ結果になる ---
+for (const stage of STAGES.filter((s) => Array.isArray(s.solution))) {
   test(`往復: ${stage.id} の解答が block→Python→parse で同じクリアになる`, () => {
     const py = astToPython(stage.solution);
     const { program, error } = parsePython(py);

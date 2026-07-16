@@ -81,10 +81,13 @@ Claude Code はこのファイルに従って作業を進める。
 差分を確認してマージしたら、次のマイルストーンに進む。
 
 ### M5: カリキュラム全段階のエンジン拡張（branch: feature/m5-python-editor）
-- [ ] Stage 2 形式: ブロック⇔Pythonコード対応表示
-- [ ] Stage 3 形式: Python穴埋めエディタ
-- [ ] Stage 4 形式: 自由記述Pythonエディタ + サンドボックス実行（Pyodide）
-- [ ] 各形式の自動テスト、PR作成
+- [x] Stage 2 形式: ブロック⇔Pythonコード対応表示（mode:'bridge'、pyGen.jsで生成、実ブラウザE2E確認）
+- [x] Stage 3 形式: Python穴埋めエディタ（mode:'fill'、選択式ブランク、正誤判定E2E確認）
+- [x] Stage 4 形式: 自由記述Pythonエディタ + サンドボックス実行（mode:'free'、pyParse.jsのサブセット
+      実行。Pyodideは軽量性の観点で見送り＝DECISIONS.md。将来の遅延ロード導入余地は残す）
+- [x] 各形式の自動テスト（言語コア20件＋ステージ検証、全57テストパス）
+      ※PR作成は gh 未導入のため未実施。ローカルで feature/m5-python-editor に実装完了。
+        gh 認証後にユーザーが push → PR 作成（PR本文は報告に記載）
 
 ### M6: ステージ量産（branch: feature/m6-stages）
 - [ ] 設計書のステージ一覧に従い、合計30ステージ以上を実装

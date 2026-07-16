@@ -73,10 +73,38 @@ body {
 .msg-area:empty { display: none; }
 
 .editor-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.editor-panel.disabled { opacity: .55; pointer-events: none; }
+.mode-ui { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.mode-ui[hidden] { display: none; }
+#block-ui { flex: 1 1 auto; min-height: 0; }
+#python-view { flex: 0 0 auto; max-height: 40%; margin-top: 4px; }
+#fill-ui, #free-ui { flex: 1; min-height: 0; }
+
+/* Python コード表示（段階2/3） */
+.python-code {
+  margin: 0; flex: 1; overflow: auto; background: #0f172a; color: #e2e8f0;
+  font-family: "SFMono-Regular", Consolas, "Courier New", monospace; font-size: 17px; line-height: 1.6;
+  padding: 12px 14px; border-radius: 12px; white-space: pre-wrap; word-break: break-word;
+}
+.fill-code { color: #e2e8f0; }
+/* 穴埋めの select */
+.blank {
+  font-family: inherit; font-size: 16px; font-weight: 700; color: #0f172a;
+  background: #fde047; border: 2px solid #f59e0b; border-radius: 8px; padding: 2px 6px; margin: 0 2px;
+  cursor: pointer; min-height: 34px; vertical-align: middle;
+}
+/* 自由記述の textarea（段階4） */
+.free-code {
+  flex: 1; width: 100%; resize: none; box-sizing: border-box;
+  font-family: "SFMono-Regular", Consolas, "Courier New", monospace; font-size: 17px; line-height: 1.6;
+  padding: 12px 14px; border-radius: 12px; border: 3px solid #cbd5e1; background: #0f172a; color: #e2e8f0;
+  min-height: 160px; tab-size: 4;
+}
+.free-code:focus { outline: none; border-color: var(--accent); }
 .panel-label { font-size: 14px; font-weight: 700; color: #475569; margin: 4px 2px; }
 .palette { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; background: rgba(255,255,255,.6); border-radius: 14px; }
 .palette.disabled, .program.disabled { opacity: .5; pointer-events: none; }
-.program { flex: 1; overflow-y: auto; background: rgba(255,255,255,.6); border-radius: 14px; padding: 8px; margin-top: 4px; min-height: 120px; }
+.program { flex: 1; overflow-y: auto; background: rgba(255,255,255,.6); border-radius: 14px; padding: 8px; margin-top: 4px; min-height: 60px; }
 
 /* ブロック */
 .palette-block, .block {

@@ -50,10 +50,28 @@
       </div>
 
       <div class="editor-panel">
-        <div class="panel-label">つかえる ブロック</div>
-        <div id="palette" class="palette"></div>
-        <div class="panel-label">じっこう する めいれい</div>
-        <div id="program" class="program"></div>
+        <!-- 段階1・2: ブロック -->
+        <div id="block-ui" class="mode-ui">
+          <div class="panel-label">つかえる ブロック</div>
+          <div id="palette" class="palette"></div>
+          <div class="panel-label">じっこう する めいれい</div>
+          <div id="program" class="program"></div>
+        </div>
+        <!-- 段階2: 対応するPython表示 -->
+        <div id="python-view" class="mode-ui" hidden>
+          <div class="panel-label">Python では こう かくよ 👀</div>
+          <pre id="python-code" class="python-code"></pre>
+        </div>
+        <!-- 段階3: 穴埋め -->
+        <div id="fill-ui" class="mode-ui" hidden>
+          <div class="panel-label">あなを うめて Python を かんせいさせよう</div>
+          <pre id="fill-code" class="python-code fill-code"></pre>
+        </div>
+        <!-- 段階4: 自由記述 -->
+        <div id="free-ui" class="mode-ui" hidden>
+          <div class="panel-label">Python を じぶんで かこう ✍️</div>
+          <textarea id="free-code" class="free-code" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+        </div>
       </div>
     </div>
 
