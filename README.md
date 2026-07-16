@@ -31,9 +31,8 @@
 ## 起動方法
 
 ### A) ブラウザで遊ぶ（GitHub Pages / 主要納品経路）
-GitHub Pages に公開すると、URL をタブレットのブラウザで開くだけで遊べます。
-公開URLは初回セットアップ後に `DECISIONS.md` に記録されます
-（形式: `https://<ユーザー名>.github.io/game-python/`）。
+**▶ https://kota229.github.io/game-python/ ◀** — タブレットのブラウザで開くだけで遊べます。
+main に push するたびに GitHub Actions が自動でデプロイします（横向き推奨）。
 
 ### B) ローカルで遊ぶ
 ES モジュールを使うため `file://` 直開きではなく簡易サーバ経由で開きます（依存ゼロ）。

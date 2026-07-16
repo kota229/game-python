@@ -4,12 +4,13 @@ import { createWorld } from './engine/world.js';
 import { run } from './engine/interpreter.js';
 import { evaluate } from './engine/rules.js';
 import { recordResult, getResult, resetProgress } from './storage.js';
-import sfx, { setMuted, isMuted } from './audio.js';
+import sfx, { setMuted, isMuted, startBgm } from './audio.js';
 import { createWorldView } from './ui/worldView.js';
 import { createProgramEditor } from './ui/programEditor.js';
 import { astToPython } from './lang/pyGen.js';
 import { parsePython } from './lang/pyParse.js';
 import { runPython } from './lang/pyRun.js';
+import { furigana } from './ui/furigana.js';
 
 const $ = (sel) => document.querySelector(sel);
 const screens = {
@@ -38,9 +39,9 @@ function isUnlocked(index) {
 
 // --- タイトル ---
 function initTitle() {
-  $('#btn-start').addEventListener('click', () => { sfx.tap(); renderMap(); show('map'); });
+  $('#btn-start').addEventListener('click', () => { sfx.tap(); startBgm(); renderMap(); show('map'); });
   $('#btn-continue').addEventListener('click', () => {
-    sfx.tap();
+    sfx.tap(); startBgm();
     // 最後にクリアした次の未クリアステージへ
     let idx = 0;
     for (let i = 0; i < STAGES.length; i++) { if (getResult(STAGES[i].id)?.cleared) idx = Math.min(STAGES.length - 1, i + 1); }
@@ -54,18 +55,46 @@ function initTitle() {
 }
 
 // --- ステージマップ ---
+const SECTION_TITLES = {
+  block: '① ブロックで うごかそう',
+  bridge: '② ブロックと Python を くらべよう',
+  fill: '③ Python の あなうめ',
+  free: '④ Python を じぶんで かこう',
+  compute: '⑤ けいさん・データ',
+};
+
 function renderMap() {
   const grid = $('#map-grid');
   grid.innerHTML = '';
+
+  // 進捗バー
+  const total = STAGES.length;
+  const done = STAGES.filter((s) => getResult(s.id)?.cleared).length;
+  $('#map-progress-bar').style.width = `${Math.round((done / total) * 100)}%`;
+  $('#map-progress-count').textContent = `クリア ${done} / ${total}`;
+
+  // 次に遊ぶ（解放済みで未クリアの最初の1つ）
+  const nextIdx = STAGES.findIndex((s, i) => isUnlocked(i) && !getResult(s.id)?.cleared);
+
+  let lastMode = null;
   STAGES.forEach((stage, i) => {
+    const m = stage.mode || 'block';
+    if (m !== lastMode) {
+      const h = document.createElement('div');
+      h.className = 'map-section-title';
+      h.textContent = SECTION_TITLES[m] || m;
+      grid.appendChild(h);
+      lastMode = m;
+    }
     const unlocked = isUnlocked(i);
     const res = getResult(stage.id);
     const card = document.createElement('button');
-    card.className = 'stage-card' + (unlocked ? '' : ' locked') + (res?.cleared ? ' cleared' : '');
+    card.className = 'stage-card' + (unlocked ? '' : ' locked') + (res?.cleared ? ' cleared' : '') + (i === nextIdx ? ' next' : '');
     const stars = res?.stars || 0;
     card.innerHTML = `
+      ${i === nextIdx ? '<span class="next-badge">▶ つぎ</span>' : ''}
       <div class="stage-num">${i + 1}</div>
-      <div class="stage-title">${unlocked ? stage.title : '？？？'}</div>
+      <div class="stage-title">${unlocked ? furigana(stage.title) : '？？？'}</div>
       <div class="stage-stars">${unlocked ? starMarks(stars) : '🔒'}</div>`;
     if (unlocked) card.addEventListener('click', () => { sfx.tap(); openStage(i); });
     grid.appendChild(card);
@@ -87,8 +116,8 @@ function openStage(index) {
   fillSelects = [];
   show('play');
 
-  $('#play-title').textContent = `${index + 1}. ${currentStage.title}`;
-  $('#play-tutorial').textContent = currentStage.tutorial || '';
+  $('#play-title').innerHTML = `${index + 1}. ${furigana(currentStage.title)}`;
+  $('#play-tutorial').innerHTML = furigana(currentStage.tutorial || '');
   $('#hint-area').textContent = '';
   $('#hint-area').classList.remove('show');
 
@@ -99,7 +128,7 @@ function openStage(index) {
   $('#compute-view').hidden = !isCompute;
   if (isCompute) {
     worldView = null;
-    $('#compute-task-text').textContent = currentStage.task || '';
+    $('#compute-task-text').innerHTML = furigana(currentStage.task || '');
     $('#compute-output').textContent = '';
     $('#compute-verdict').textContent = '';
     $('#compute-verdict').className = 'compute-verdict';
@@ -305,7 +334,7 @@ function onHint() {
   const hints = currentStage.hints || [];
   if (hints.length === 0) return;
   const area = $('#hint-area');
-  area.textContent = `💡 ${hints[Math.min(hintIndex, hints.length - 1)]}`;
+  area.innerHTML = `💡 ${furigana(hints[Math.min(hintIndex, hints.length - 1)])}`;
   area.classList.add('show');
   hintIndex = Math.min(hintIndex + 1, hints.length - 1);
 }
