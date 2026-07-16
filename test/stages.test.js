@@ -6,6 +6,7 @@ import { createWorld } from '../js/engine/world.js';
 import { run } from '../js/engine/interpreter.js';
 import { evaluate } from '../js/engine/rules.js';
 import { parsePython } from '../js/lang/pyParse.js';
+import { runPython } from '../js/lang/pyRun.js';
 
 const mode = (s) => s.mode || 'block';
 
@@ -24,13 +25,19 @@ test('全ステージに必須フィールドがある', () => {
     assert.ok(s.id, 'id 必須');
     assert.ok(!ids.has(s.id), `id 重複: ${s.id}`); ids.add(s.id);
     assert.ok(s.title, `${s.id}: title 必須`);
-    assert.ok(s.grid && s.grid.cols && s.grid.rows, `${s.id}: grid 必須`);
-    assert.ok(s.robot, `${s.id}: robot 必須`);
     assert.ok(Array.isArray(s.hints) && s.hints.length >= 1, `${s.id}: hints 必須`);
     const m = mode(s);
+    if (m !== 'compute') {
+      assert.ok(s.grid && s.grid.cols && s.grid.rows, `${s.id}: grid 必須`);
+      assert.ok(s.robot, `${s.id}: robot 必須`);
+    }
     if (m === 'block' || m === 'bridge') assert.ok(Array.isArray(s.solution), `${s.id}: solution 必須`);
     if (m === 'fill') assert.ok(s.fill && s.fill.template && Array.isArray(s.fill.blanks), `${s.id}: fill 必須`);
     if (m === 'free') assert.ok(typeof s.solutionCode === 'string', `${s.id}: solutionCode 必須`);
+    if (m === 'compute') {
+      assert.ok(typeof s.solutionCode === 'string', `${s.id}: solutionCode 必須`);
+      assert.ok(s.check && typeof s.check.output === 'string', `${s.id}: check.output 必須`);
+    }
   }
 });
 
@@ -73,6 +80,14 @@ for (const stage of STAGES) {
       const { world, trace } = run(createWorld(stage), program);
       const ev = evaluate({ world, stage, program, trace });
       assert.equal(ev.success, true, `${stage.id}: 未クリア (${ev.reason})`);
+    });
+  }
+
+  if (m === 'compute') {
+    test(`[compute] ${stage.id}「${stage.title}」の solutionCode が 正しい出力`, () => {
+      const r = runPython(stage.solutionCode);
+      assert.equal(r.error, null, `${stage.id}: 実行エラー: ${r.error}`);
+      assert.equal(r.output.trim(), stage.check.output.trim(), `${stage.id}: 出力が 期待と違う`);
     });
   }
 }

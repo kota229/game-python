@@ -9,6 +9,7 @@ import { createWorldView } from './ui/worldView.js';
 import { createProgramEditor } from './ui/programEditor.js';
 import { astToPython } from './lang/pyGen.js';
 import { parsePython } from './lang/pyParse.js';
+import { runPython } from './lang/pyRun.js';
 
 const $ = (sel) => document.querySelector(sel);
 const screens = {
@@ -91,18 +92,30 @@ function openStage(index) {
   $('#hint-area').textContent = '';
   $('#hint-area').classList.remove('show');
 
-  // キャンバス
-  const canvas = $('#world-canvas');
-  fitCanvas(canvas);
-  worldView = createWorldView(canvas);
-  worldView.setStage(currentStage);
+  const isCompute = currentMode === 'compute';
 
-  // モードごとのUIを出し分け
+  // 左パネル: ロボット世界 or 計算コンソール
+  $('#world-canvas').hidden = isCompute;
+  $('#compute-view').hidden = !isCompute;
+  if (isCompute) {
+    worldView = null;
+    $('#compute-task-text').textContent = currentStage.task || '';
+    $('#compute-output').textContent = '';
+    $('#compute-verdict').textContent = '';
+    $('#compute-verdict').className = 'compute-verdict';
+  } else {
+    const canvas = $('#world-canvas');
+    fitCanvas(canvas);
+    worldView = createWorldView(canvas);
+    worldView.setStage(currentStage);
+  }
+
+  // モードごとのエディタUIを出し分け
   const useBlock = currentMode === 'block' || currentMode === 'bridge';
   $('#block-ui').hidden = !useBlock;
   $('#python-view').hidden = currentMode !== 'bridge';
   $('#fill-ui').hidden = currentMode !== 'fill';
-  $('#free-ui').hidden = currentMode !== 'free';
+  $('#free-ui').hidden = !(currentMode === 'free' || isCompute);
 
   if (useBlock) {
     editor = createProgramEditor($('#palette'), $('#program'), {
@@ -113,7 +126,7 @@ function openStage(index) {
     if (currentMode === 'bridge') updatePythonView();
   } else if (currentMode === 'fill') {
     renderFill(currentStage);
-  } else if (currentMode === 'free') {
+  } else if (currentMode === 'free' || isCompute) {
     $('#free-code').value = currentStage.starter || '';
   }
 
@@ -193,6 +206,7 @@ function setRunning(v) {
 
 async function onRun() {
   if (running) return;
+  if (currentMode === 'compute') { onRunCompute(); return; }
   const program = getProgramForRun();
   if (program === null) { sfx.fail(); return; }
   $('#msg-area').textContent = '';
@@ -227,6 +241,37 @@ async function onRun() {
   }
 }
 
+// 計算/出力モードの実行
+function onRunCompute() {
+  const code = $('#free-code').value;
+  if (!code.trim()) { flashMsg('Python を かいてね！'); sfx.fail(); return; }
+  const outEl = $('#compute-output');
+  const r = runPython(code);
+  if (r.error) {
+    outEl.textContent = '⚠️ ' + r.error;
+    setVerdict(false, 'エラーが あるよ');
+    sfx.fail();
+    return;
+  }
+  outEl.textContent = r.output || '(なにも print されていないよ)';
+  const ok = r.output.trim() === (currentStage.check?.output ?? '').trim();
+  if (ok) {
+    setVerdict(true, 'せいかい！');
+    recordResult(currentStage.id, 3);
+    setRunning(true);
+    showClear(3);
+  } else {
+    setVerdict(false, 'こたえが ちがうよ。もういちど！');
+    sfx.fail();
+  }
+}
+
+function setVerdict(ok, text) {
+  const el = $('#compute-verdict');
+  el.className = 'compute-verdict ' + (ok ? 'ok' : 'ng');
+  el.textContent = (ok ? '⭕ ' : '❌ ') + text;
+}
+
 function failMessage(reason) {
   switch (reason) {
     case 'not_at_goal': return 'ゴールに とどかなかった…もういちど！';
@@ -245,7 +290,13 @@ function onReset() {
   if (running) return;
   sfx.tap();
   $('#msg-area').textContent = '';
-  worldView.reset();
+  if (currentMode === 'compute') {
+    $('#compute-output').textContent = '';
+    $('#compute-verdict').textContent = '';
+    $('#compute-verdict').className = 'compute-verdict';
+    return;
+  }
+  if (worldView) worldView.reset();
 }
 
 function onHint() {
@@ -297,7 +348,12 @@ function onRetry() {
   sfx.tap();
   hideClear();
   setRunning(false);
-  worldView.reset();
+  if (currentMode === 'compute') {
+    $('#compute-verdict').textContent = '';
+    $('#compute-verdict').className = 'compute-verdict';
+  } else if (worldView) {
+    worldView.reset();
+  }
 }
 
 // --- 配線 ---
