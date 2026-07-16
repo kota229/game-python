@@ -1,7 +1,7 @@
 // programEditor.js — ブロックパレット＋プログラム組み立てUI（タップ追加 / ドラッグ&ドロップ）。
 // ブラウザ専用。program（ノード配列）を内部に保持し、変更のたびに再描画する。
 
-import { CATALOG, isContainer } from './blockCatalog.js';
+import { CATALOG, isContainer, COND_LABELS, COND_ORDER } from './blockCatalog.js';
 
 let uidSeq = 1;
 const nextUid = () => `b${uidSeq++}`;
@@ -12,6 +12,7 @@ function makeNode(type) {
   if (def?.param === 'times') node.times = def.defaultTimes ?? 3;
   if (def?.param === 'cond') node.cond = def.defaultCond ?? 'path_ahead';
   if (def?.container) node.body = [];
+  if (def?.hasElse) node.else = [];
   return node;
 }
 
@@ -25,6 +26,10 @@ export function createProgramEditor(paletteEl, programEl, { allowed, onChange, s
       if (list[i]._uid === uid) return { list, index: i, node: list[i] };
       if (list[i].body) {
         const r = locate(uid, list[i].body, list[i]);
+        if (r) return r;
+      }
+      if (list[i].else) {
+        const r = locate(uid, list[i].else, list[i]);
         if (r) return r;
       }
     }
@@ -113,6 +118,23 @@ export function createProgramEditor(paletteEl, programEl, { allowed, onChange, s
       head.appendChild(ctrl);
     }
 
+    // if / while の条件セレクタ
+    if (def.param === 'cond') {
+      const sel = document.createElement('select');
+      sel.className = 'cond-ctrl';
+      for (const c of COND_ORDER) {
+        const o = document.createElement('option');
+        o.value = c; o.textContent = COND_LABELS[c];
+        if (c === node.cond) o.selected = true;
+        sel.appendChild(o);
+      }
+      sel.addEventListener('change', () => { node.cond = sel.value; beep('tap'); emitChange(); });
+      sel.addEventListener('pointerdown', (e) => e.stopPropagation());
+      // while は「〈条件〉のあいだ くりかえす」の語順にする
+      if (node.type === 'while') head.insertBefore(sel, label);
+      else head.appendChild(sel);
+    }
+
     const del = document.createElement('button');
     del.className = 'block-del'; del.textContent = '✕';
     del.title = 'けす';
@@ -131,6 +153,24 @@ export function createProgramEditor(paletteEl, programEl, { allowed, onChange, s
         body.appendChild(h);
       }
       card.appendChild(body);
+
+      // if の else 分岐
+      if (def.hasElse) {
+        const elseLabel = document.createElement('div');
+        elseLabel.className = 'else-label';
+        elseLabel.textContent = 'そうでなければ';
+        card.appendChild(elseLabel);
+        if (!node.else) node.else = [];
+        const elseList = buildList(node.else, false);
+        elseList.classList.add('block-body', 'else-body');
+        if (node.else.length === 0) {
+          const h = document.createElement('div');
+          h.className = 'drop-hint small';
+          h.textContent = '（なくても いいよ）';
+          elseList.appendChild(h);
+        }
+        card.appendChild(elseList);
+      }
     }
     return card;
   }
@@ -261,7 +301,7 @@ export function createProgramEditor(paletteEl, programEl, { allowed, onChange, s
   function clear() { program = []; renderProgram(); emitChange(); }
   function isEmpty() { return program.length === 0; }
   function blockCount() {
-    const c = (l) => l.reduce((s, n) => s + 1 + (n.body ? c(n.body) : 0), 0);
+    const c = (l) => l.reduce((s, n) => s + 1 + (n.body ? c(n.body) : 0) + (n.else ? c(n.else) : 0), 0);
     return c(program);
   }
 
