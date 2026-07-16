@@ -1,0 +1,28 @@
+# 依存関係・ビルド生成物
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# 参照用にクローンした他者のリポジトリ（自分のリポジトリには含めない）
+reference/
+
+# OSゴミファイル
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+
+# ログ・一時ファイル
+*.log
+npm-debug.log*
+.cache/
+
+# Capacitor / Android 生成物
+android/
+ios/
+.gradle/

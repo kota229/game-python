@@ -1,0 +1,15 @@
+{
+  "name": "codequest",
+  "version": "0.1.0",
+  "description": "子ども向けプログラミング学習ゲーム CodeQuest（ブラウザ/タブレット向け・オフライン完結）",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "serve": "node scripts/dev-server.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
