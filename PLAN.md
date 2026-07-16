@@ -115,11 +115,12 @@ Claude Code はこのファイルに従って作業を進める。
 - [x] PR作成 → CI/テスト確認 → マージ
 
 ### M8: 納品準備（branch: feature/m8-release）
-- [ ] Capacitor プロジェクト構成の整備（APK化手順の検証または手順書作成）
-- [ ] CREDITS.md の最終化（利用した全OSSのライセンス表記が揃っているか監査）
-- [ ] README.md 完成（Pages のURL、起動方法、APK化手順、操作説明）
-- [ ] 全テストパスの最終確認、DECISIONS.md の整理
-- [ ] PR作成、マージ後に「納品完了。タブレットで ○○ を開いてください」と報告する
+- [x] Capacitor 構成整備（`capacitor.config.json` + `npm run build:www`。実APKビルドは
+      Android Studio 必須のため手順書として整備。build:www は実行確認済み）
+- [x] CREDITS.md 最終化（監査: 公開Webアプリ本体の第三者コードはゼロ＝全自作。ツール類を明記）
+- [x] README.md 完成（公開URL、ローカル/タブレット起動、APK手順、操作説明、5段階の進み方）
+- [x] 全テストパス最終確認（ローカル124件 + CI）、DECISIONS.md 整理（Pyodide不採用の明記等）
+- [x] PR作成 → CI/テスト確認 → マージ → 納品報告
 
 ## 完了条件（Definition of Done）
 - GitHub Pages のURLをタブレットのブラウザで開けば、ゲームが最初から最後まで遊べる

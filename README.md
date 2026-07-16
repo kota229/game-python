@@ -25,6 +25,9 @@
 4. ゴール（🚩）に着く／ジェム（💎）を全部集めるとクリア。**スター1〜3個**で評価されます。
    - 少ないブロックで解くほど★が多い（`くりかえし` を使うと短く書けます）。
 5. こまったら **💡ヒント**（3段階：やさしい→答えに近い→模範解答）。失敗してもペナルティなし。
+6. 先の段階では、ブロックの横に **対応するPython** が出たり、**Pythonの穴うめ**や
+   **自由記述**、**計算問題（print の出力で正解判定）** に進みます。ステージマップの
+   セクション（①ブロック〜⑤けいさん）と「▶つぎ」の目印にそって進めば OK。
 
 ---
 
@@ -57,16 +60,24 @@ GitHub Actions（`.github/workflows/test.yml`）でも push / PR ごとに自動
 ---
 
 ## APK化（Capacitor）※手順書
-ブラウザ版がそのまま動くため、必要に応じて Capacitor で APK 化できます
-（本リポジトリは静的構成なので Web アセットをそのまま `webDir` に指定できます）。
+ブラウザ版がそのまま動くため、必要に応じて Capacitor で APK 化できます。
+本リポジトリには `capacitor.config.json`（`webDir: "www"`）と、静的ファイルを `www/` に
+集める `npm run build:www`（ビルド＝バンドル不要、コピーのみ）を用意済みです。
 ```bash
+# 1) Web アセットを www/ に集める（毎回のコード変更後に実行）
+npm run build:www
+
+# 2) Capacitor を導入して Android プロジェクトを作る（初回のみ）
 npm install -D @capacitor/core @capacitor/cli @capacitor/android
-npx cap init CodeQuest com.example.codequest --web-dir .
 npx cap add android
+
+# 3) www/ を同期して Android Studio を開く
 npx cap sync
-npx cap open android   # Android Studio でビルド → APK 生成
+npx cap open android   # Android Studio で Build → APK 生成
 ```
-> 実際の APK ビルドには Android Studio / JDK が必要です。フェーズ2（M8）で構成を整備します。
+> 実際の APK ビルドには Android Studio / JDK が必要です（この開発環境では未導入のため
+> APK 生成そのものは未実施。上記手順で生成できます）。`appId`/`appName` は
+> `capacitor.config.json` で変更できます。
 
 ---
 

@@ -3,9 +3,11 @@
 Claude Code が自走中に行った判断をここに追記する。
 形式: 日付 / 判断内容 / 理由 / 代替案
 
-（例）
-- 2026-07-16 / Python実行にPyodideを採用 / オフラインで本物のPythonが動き、
-  Stage 4の自由記述に対応できるため / 代替案: 自作簡易インタプリタ（Pyodide導入失敗時）
+（記入形式の例）
+- 日付 / 判断内容 / 理由 / 代替案
+
+> 注: Python 実行は最終的に **Pyodide を採用せず**、軽量な自作サブセット実行系を採用した
+> （理由は M5 / M6.5 の項目、および `CREDITS.md` を参照）。
 
 ---
 
@@ -141,3 +143,15 @@ Claude Code 側で自動化できる。）
   ※Pyodide は引き続き不要（サブセットで要件充足・軽量・オフライン・CI検証可能を維持）
 
 ---
+
+## 2026-07-16 M8（納品準備）
+
+- 2026-07-16 / **APK化は Capacitor 手順書＋設定で対応（実ビルドは環境未対応のため未実施）** /
+  この環境に Android Studio/JDK が無く APK 生成はできないが、CLAUDE.md の方針
+  「環境的にAPKビルド不可の場合は README にビルド手順を明記すれば可」に従い、
+  `capacitor.config.json`（webDir=www）と `npm run build:www`（バンドル不要のコピー）、
+  README に手順を整備した / 代替案: 実APKビルド（環境が整えば上記手順で生成可能）
+- 2026-07-16 / **CREDITS.md を最終監査**: 公開Webアプリ本体に含まれる第三者コードは無し（全自作）。
+  Capacitor(MIT)/puppeteer-core(Apache-2.0)/GitHub公式Actions(MIT) は開発・配布ツールで本体非同梱 /
+- 2026-07-16 / **完成状態**: 合計39ステージ・4段階（+計算）、全テスト通過（ローカル/CI）、
+  GitHub Pages 公開（https://kota229.github.io/game-python/）、main はマイルストーン単位の履歴 /

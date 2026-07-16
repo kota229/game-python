@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "test": "node --test",
-    "serve": "node scripts/dev-server.js"
+    "serve": "node scripts/dev-server.js",
+    "build:www": "node scripts/build-www.js"
   },
   "license": "MIT",
   "engines": {
